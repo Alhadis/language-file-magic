@@ -18,7 +18,7 @@ module.exports = {
 					const {nullGrammar} = atom.grammars;
 					const path = editor.getPath();
 					if(isMagical.test(path) && nullGrammar === editor.getGrammar())
-						editor.setGrammar(this.grammar);
+						this.assignGrammar(editor);
 				})
 			);
 		});
@@ -30,6 +30,11 @@ module.exports = {
 			this.disposables.dispose();
 			this.disposables = null;
 		}
+	},
+	
+	assignGrammar(editor){
+		editor.setGrammar(this.grammar);
+		atom.textEditors.setGrammarOverride(editor, scopeName);
 	},
 	
 	waitToLoad(){

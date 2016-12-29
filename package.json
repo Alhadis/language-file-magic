@@ -1,0 +1,11 @@
+{
+	"name": "language-file-magic",
+	"version": "0.0.0",
+	"description": "Syntax highlighting for file(1) magic data.",
+	"keywords": ["File", "Magic", "MIME", "Magic number", "Signature", "Header"],
+	"repository": "https://github.com/Alhadis/language-file-magic",
+	"license": "ISC",
+	"engines": {
+		"atom": "*"
+	}
+}

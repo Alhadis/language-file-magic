@@ -1,0 +1,18 @@
+name: "File Magic"
+scopeName: "text.file-magic"
+fileTypes: ["apache2/magic"]
+patterns: [include: "#main"]
+
+repository:
+	main:
+		patterns: [
+			{include: "#comment"}
+		]
+	
+	
+	# Comment lines
+	comment:
+		name: "comment.line.number-sign.file-magic"
+		begin: "#"
+		end:   "$"
+		beginCaptures: "punctuation.definition.comment.file-magic"

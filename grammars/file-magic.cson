@@ -11,6 +11,11 @@ repository:
 	main:
 		patterns: [
 			{include: "#comment"}
+			{include: "#escape"}
+			{include: "#operator"}
+			{include: "#test"}
+			{include: "#number"}
+			{include: "#dataType"}
 		]
 	
 	
@@ -20,3 +25,91 @@ repository:
 		begin: "#"
 		end:   "$"
 		beginCaptures: "punctuation.definition.comment.file-magic"
+
+
+	escape:
+		patterns: [
+			{match: "\\\\x[A-Fa-f0-9]{2}", name: "constant.character.escape.hex.file-magic"}
+			{match: "\\\\[0-8]{3}",        name: "constant.character.escape.octal.file-magic"}
+			{match: "\\\\.",               name: "constant.character.escape.file-magic"}
+		]
+
+		
+
+	# Numeric literals
+	number:
+		patterns: [
+			{match: "0x[A-Fa-f0-9]+", name: "constant.numeric.hex.file-magic"}
+			{match: "0\\d+",          name: "constant.numeric.octal.file-magic"}
+			{match: "\\d+",           name: "constant.numeric.integer.byte-offset.file-magic"}
+		]
+
+
+
+	# Different types of data to test
+	test:
+		patterns: [{
+			name: "meta.data-test.file-magic"
+			match: """(?x) (?<=\\t|\\x20{2})
+				
+				(?# Type of test being performed)
+				(byte|short|long|quad|float|double|string|pstring|date|qdate|ldate
+				|qldate|qwdate|beid3|beshort|belong|bequad|befloat|bedouble|bedate
+				|beqdate|beldate|beqldate|beqwdate|bestring16|leid3|leshort|lelong
+				|lequad|lefloat|ledouble|ledate|leqdate|leldate|leqldate|leqwdate
+				|lestring16|melong|medate|meldate|indirect|name|use|regex|search
+				|default|clear|ubyte)
+				
+				(?# Possible type specification)
+				(?:
+					\\s* (/) ([BCHJLTWbchlstw0-9]*)
+					|
+					\\s* ([=<>&^~!]) \\s*
+					((?:0x)?[A-Fa-f\\d]+)
+				)?
+				
+				\\s+
+				
+				(?# Test criteria)
+				(
+					(x(?=\\s))
+					|
+					((?:[^\\s\\\\]|\\\\.)+)
+					(?=
+						(?:\\t+|\\x20{2,})
+						[^\\#\\s]
+					)
+				)?
+			"""
+			captures:
+				1: name: "entity.type.data-test.file-magic"
+				2: name: "keyword.operator.specifier.file-magic"
+				3: name: "storage.modifier.specifier.file-magic"
+				4: name: "keyword.operator.logical.file-magic"
+				5: patterns: [include: "#injectables"]
+				6: name: "variable.parameter.data-test.file-magic"
+				7: name: "keyword.operator.wildcard.file-magic"
+				8: patterns: [include: "#injectables"]
+		},{
+			name: "string.quoted.double.file-magic"
+			match: """(?x)
+				(?:\\t+|\\x20{2,})
+				(
+					(?:[^\\s\\\\]|\\\\.|\\x20(?=\\S))+
+				)
+				\\s*
+				(?:$|(?=\\#))
+			"""
+		}]
+
+	operator:
+		name: "keyword.operator.logical.file-magic"
+		match: "[=<>&^~!]"
+
+	
+	injectables:
+		patterns: [
+			{include: "#operator"}
+			{include: "#escape"}
+			{include: "#number"}
+		]

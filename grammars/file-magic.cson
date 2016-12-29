@@ -1,6 +1,10 @@
 name: "File Magic"
 scopeName: "text.file-magic"
-fileTypes: ["apache2/magic"]
+fileTypes: [
+	"apache2/magic"
+	"magic/Header"
+	"magic/Localstuff"
+]
 patterns: [include: "#main"]
 
 repository:

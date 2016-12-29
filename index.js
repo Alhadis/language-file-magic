@@ -1,7 +1,7 @@
 "use strict";
 
 const {CompositeDisposable} = require("atom");
-const isMagical = /([\/\\])magic\1Magdir\1[-.\w]+$/i;
+const isMagical = /([\/\\])(?:magic\1Magdir|file\1magic)\1[-.\w]+$/i;
 const scopeName = "text.file-magic";
 
 

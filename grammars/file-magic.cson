@@ -50,15 +50,14 @@ repository:
 	test:
 		patterns: [{
 			name: "meta.data-test.file-magic"
-			match: """(?x) (?<=\\t|\\x20{2})
+			match: """(?x) (?<=\\t|\\x20)
 				
 				(?# Type of test being performed)
-				(byte|short|long|quad|float|double|string|pstring|date|qdate|ldate
-				|qldate|qwdate|beid3|beshort|belong|bequad|befloat|bedouble|bedate
-				|beqdate|beldate|beqldate|beqwdate|bestring16|leid3|leshort|lelong
-				|lequad|lefloat|ledouble|ledate|leqdate|leldate|leqldate|leqwdate
-				|lestring16|melong|medate|meldate|indirect|name|use|regex|search
-				|default|clear|ubyte|u[bl]elong)
+				(u?(?:byte|short|long|quad|float|double|string|pstring|date|qdate|ldate
+				|qldate|qwdate|beid3|beshort|belong|bequad|befloat|bedouble|bedate|beqdate
+				|beldate|beqldate|beqwdate|bestring16|leid3|leshort|lelong|lequad|lefloat
+				|ledouble|ledate|leqdate|leldate|leqldate|leqwdate|lestring16|melong|medate
+				|meldate)|clear|default|indirect|name|regex|search|use)
 				
 				(?# Possible type specification)
 				(?:\\s*(/)([BCHJLTWbchlstw0-9]*)|\\s*([=<>&^~!])\\s*((?:0x)?[A-Fa-f\\d]+))?

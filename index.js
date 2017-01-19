@@ -35,6 +35,11 @@ module.exports = {
 				atom.workspace.observeTextEditors(ed => this.enchant(ed))
 			);
 		});
+		atom.textEditors.editors.forEach(editor => {
+			const gram = editor.getGrammar();
+			if(gram && SCOPE_NAME === gram.scopeName)
+				editor.setTabLength(8);
+		});
 		this.activated = true;
 	},
 	

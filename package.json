@@ -7,5 +7,12 @@
 	"license": "ISC",
 	"engines": {
 		"atom": "*"
+	},
+	"configSchema": {
+		"paths": {
+			"type": "array",
+			"default": ["magic/Magdir/*", "file/magic/*"],
+			"items": {"type": "string"}
+		}
 	}
 }

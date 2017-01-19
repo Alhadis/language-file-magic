@@ -1,45 +1,65 @@
 "use strict";
 
 const {CompositeDisposable} = require("atom");
-const isMagical = /([\/\\])(?:magic\1Magdir|file\1magic)\1[-.\w]+$/i;
-const scopeName = "text.file-magic";
+const {resolve, sep} = require("path");
+const SCOPE_NAME = "text.file-magic";
 
 
 module.exports = {
+	activated:   false,
 	disposables: null,
+	pathPattern: null,
 	grammar:     null,
 	
 	activate(){
-		this.disposables = new CompositeDisposable();
+		this.disposables = new CompositeDisposable(
+			atom.config.observe("language-file-magic.paths", paths => {
+				this.pathPattern = new RegExp(paths.map(path => {
+					path = resolve(path);
+					if(!/\*/.test(path)) path += sep + "*";
+					return path
+						.replace(/[\\\/]+/g, sep)
+						.replace(/\*+/g, "\u274B")
+						.replace(/[/\\^$*+?{}\[\]().|]/g, "\\$&")
+						.replace(/\u274B+/g, "[-.\\w]+") + "$";
+				}).join("|"), "i");
+				
+				const {editors} = atom.textEditors;
+				if(this.activated && editors)
+					editors.forEach(ed => enchant(ed));
+			})
+		);
 		this.waitToLoad().then(grammar => {
 			this.grammar = grammar;
 			this.disposables.add(
-				atom.workspace.observeTextEditors(editor => {
-					const {nullGrammar} = atom.grammars;
-					const path = editor.getPath();
-					if(isMagical.test(path) && nullGrammar === editor.getGrammar())
-						this.assignGrammar(editor);
-				})
+				atom.workspace.observeTextEditors(ed => this.enchant(ed))
 			);
 		});
+		this.activated = true;
 	},
 	
 	deactivate(){
-		this.grammar = null;
-		if(this.disposables){
+		if(this.disposables)
 			this.disposables.dispose();
-			this.disposables = null;
-		}
+		this.disposables = null;
+		this.grammar     = null;
+		this.activated   = false;
 	},
 	
-	assignGrammar(editor){
-		editor.setGrammar(this.grammar);
-		atom.textEditors.setGrammarOverride(editor, scopeName);
+	enchant(editor){
+		if(!editor) return;
+		const isMagical = this.pathPattern.test(editor.getPath());
+		if(isMagical && atom.grammars.nullGrammar === editor.getGrammar()){
+			editor.setGrammar(this.grammar);
+			atom.textEditors.setGrammarOverride(editor, SCOPE_NAME);
+		}
+		else if(!isMagical && SCOPE_NAME === atom.textEditors.getGrammarOverride(editor))
+			atom.textEditors.clearGrammarOverride(editor);
 	},
 	
 	waitToLoad(){
 		return new Promise(resolve => {
-			let grammar = atom.grammars.grammarForScopeName(scopeName);
+			let grammar = atom.grammars.grammarForScopeName(SCOPE_NAME);
 			
 			if(grammar)
 				resolve(grammar);
@@ -47,7 +67,7 @@ module.exports = {
 			else{
 				const disposables = new CompositeDisposable();
 				const handler = () => {
-					grammar = atom.grammars.grammarForScopeName(scopeName);
+					grammar = atom.grammars.grammarForScopeName(SCOPE_NAME);
 					if(grammar){
 						disposables.dispose();
 						resolve(grammar);

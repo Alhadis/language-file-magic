@@ -12,6 +12,7 @@ repository:
 		patterns: [
 			{include: "#comment"}
 			{include: "#escape"}
+			{include: "#offset"}
 			{include: "#operator"}
 			{include: "#test"}
 			{include: "#number"}
@@ -39,11 +40,47 @@ repository:
 	# Numeric literals
 	number:
 		patterns: [
-			{match: "0x[A-Fa-f0-9]+", name: "constant.numeric.hex.file-magic"}
-			{match: "0\\d+",          name: "constant.numeric.octal.file-magic"}
-			{match: "\\d+",           name: "constant.numeric.integer.byte-offset.file-magic"}
+			{match: "-?0x[A-Fa-f0-9]+", name: "constant.numeric.hex.file-magic"}
+			{match: "-?0\\d+",          name: "constant.numeric.octal.file-magic"}
+			{match: "-?\\d+",           name: "constant.numeric.integer.byte-offset.file-magic"}
 		]
 
+
+	# Byte offset
+	offset:
+		name: "meta.offset.file-magic"
+		match: """(?x)
+			^(>+&?)
+			(\\()
+			(&?)
+			(-?0x[A-Fa-f0-9]+|-?\\d+)
+			(?:
+				(\\.)
+				([BISLbisl])
+			)?
+			([-+*/])?
+			(?:
+				(-?0x[A-Fa-f0-9]+|-?\\d+)
+				|
+				(\\()
+				(-?0x[A-Fa-f0-9]+|-?\\d+)
+				(\\))
+			)?
+			(\\))
+		"""
+		captures:
+			1:  name: "keyword.operator.offset.file-magic"
+			2:  name: "punctuation.section.bracket.round.begin.file-magic"
+			3:  name: "keyword.operator.offset.file-magic"
+			4:  patterns: [include: "#number"]
+			5:  name: "punctuation.delimiter.specifier.file-magic"
+			6:  name: "constant.language.specifier.file-magic"
+			7:  name: "keyword.operator.arithmetic.file-magic"
+			8:  patterns: [include: "#number"]
+			9:  name: "punctuation.section.bracket.round.begin.file-magic"
+			10: patterns: [include: "#number"]
+			11: name: "punctuation.section.bracket.round.end.file-magic"
+			12: name: "punctuation.section.bracket.round.end.file-magic"
 
 
 	# Different types of data to test

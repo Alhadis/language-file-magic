@@ -22,7 +22,7 @@ repository:
 	# Comment lines
 	comment:
 		name: "comment.line.number-sign.file-magic"
-		begin: "#"
+		begin: "^#"
 		end:   "$"
 		beginCaptures: "punctuation.definition.comment.file-magic"
 
@@ -58,28 +58,13 @@ repository:
 				|beqdate|beldate|beqldate|beqwdate|bestring16|leid3|leshort|lelong
 				|lequad|lefloat|ledouble|ledate|leqdate|leldate|leqldate|leqwdate
 				|lestring16|melong|medate|meldate|indirect|name|use|regex|search
-				|default|clear|ubyte)
+				|default|clear|ubyte|u[bl]elong)
 				
 				(?# Possible type specification)
-				(?:
-					\\s* (/) ([BCHJLTWbchlstw0-9]*)
-					|
-					\\s* ([=<>&^~!]) \\s*
-					((?:0x)?[A-Fa-f\\d]+)
-				)?
-				
-				\\s+
+				(?:\\s*(/)([BCHJLTWbchlstw0-9]*)|\\s*([=<>&^~!])\\s*((?:0x)?[A-Fa-f\\d]+))?
 				
 				(?# Test criteria)
-				(
-					(x(?=\\s))
-					|
-					((?:[^\\s\\\\]|\\\\.)+)
-					(?=
-						(?:\\t+|\\x20{2,})
-						[^\\#\\s]
-					)
-				)?
+				(?:\\s+((x(?=\\s))|((?:[^\\s\\\\]|\\\\.)+)(?=$|(?:\\t+|\\x20{2,})\\S)))?
 			"""
 			captures:
 				1: name: "entity.type.data-test.file-magic"
@@ -91,15 +76,14 @@ repository:
 				7: name: "keyword.operator.wildcard.file-magic"
 				8: patterns: [include: "#injectables"]
 		},{
-			name: "string.quoted.double.file-magic"
-			match: """(?x)
-				(?:\\t+|\\x20{2,})
-				(
-					(?:[^\\s\\\\]|\\\\.|\\x20(?=\\S))+
-				)
-				\\s*
-				(?:$|(?=\\#))
-			"""
+			match: "(?:\\t+|\\x20{2,})((?:[^\\s\\\\]|\\\\.|\\x20(?=\\S))+)\\s*$"
+			captures:
+				1:
+					name: "string.quoted.double.file-magic"
+					patterns: [
+						{include: "source.c#string_placeholder"}
+						{include: "#escape"}
+					]
 		}]
 
 	operator:

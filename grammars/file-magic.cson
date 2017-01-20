@@ -109,7 +109,50 @@ repository:
 	# Different types of data to test
 	test:
 		patterns: [{
-			name: "meta.data-test.file-magic"
+			# Ad-hoc/file-specific patches
+			name: "meta.test.$1-type.file-magic"
+			match: """(?x)
+				(?# Magdir/vacuum-cleaner 1.1 2015/11/1)
+				(?<=\\d)
+				\\s+ (lelong)
+				\\s  ([<=>&^~!])(-?\\d+)
+				\\s* $ """
+			captures:
+				1: name: "entity.type.$1-test.file-magic"
+				2: name: "keyword.operator.logical.file-magic"
+				3: patterns: [include: "#number"]
+		},{
+			# Dummy tests which match anything
+			name: "meta.test.$1-type.file-magic"
+			match: "(?<=[\\t ])(clear|default)((?=\\/)\\S+)?\\s*(?:(x)?\\s*)?$"
+			captures:
+				1: name: "entity.type.$1-test.file-magic"
+				2: patterns: [include: "#testFlags"]
+				3: name: "keyword.operator.wildcard.file-magic"
+		},{
+			# String/Search: Embed #escapes only
+			name: "meta.test.$1-type.file-magic"
+			match: "(?<=[\\t ])(search|string)((?=\\/)\\S+)?\\s+([<=>&^~!])?((?:[^\\s\\\\]|\\\\.)+)"
+			captures:
+				1: name: "entity.type.$1-test.file-magic"
+				2: patterns: [include: "#testFlags"]
+				3: name: "keyword.operator.logical.file-magic"
+				4: name: "variable.parameter.$1-test.file-magic", patterns: [include: "#escape"]
+		},{
+			# Regex: Embed #escapes + source.regexp
+			name: "meta.test.$1-type.file-magic"
+			match: "(?<=[\\t ])(regex)((?=\\/)\\S+)?\\s+([<=>&^~!])?((?:[^\\s\\\\]|\\\\.)+)"
+			captures:
+				1: name: "entity.type.$1-test.file-magic"
+				2: patterns: [include: "#testFlags"]
+				3: name: "keyword.operator.logical.file-magic"
+				4: name: "variable.parameter.$1-test.file-magic", patterns: [
+					{include: "source.regexp"}
+					{include: "#escape"}
+				]
+		},{
+			# Everything else
+			name: "meta.test.$1-type.file-magic"
 			match: """(?x) (?<=\\t|\\x20)
 				
 				(?# Type of test being performed)
@@ -119,23 +162,28 @@ repository:
 				|ledouble|ledate|leqdate|leldate|leqldate|leqwdate|lestring16|melong|medate
 				|meldate)|clear|default|indirect|name|regex|search|use)
 				
-				(?# Possible type specification)
-				(?:\\s*(/)([BCHJLTWbchlstw0-9]*)|\\s*([=<>&^~!])\\s*((?:0x)?[A-Fa-f\\d]+))?
+				(?# Modifier flags)
+				((?=\\/)\\S+)?
 				
-				(?# Test criteria)
-				(?:\\s+((x(?=\\s))|((?:[^\\s\\\\]|\\\\.)+)(?=$|(?:\\t+|\\x20{2,})\\S)))?
+				(?# Value column)
+				(?:
+					\\s+
+					([<=>&^~!])?
+					( (x(?=\\s|$)) | ((?:[^\\s\\\\]|\\\\.)+) )
+				)?
 			"""
 			captures:
 				1: name: "entity.type.data-test.file-magic"
-				2: name: "keyword.operator.specifier.file-magic"
-				3: name: "storage.modifier.specifier.file-magic"
-				4: name: "keyword.operator.logical.file-magic"
-				5: patterns: [include: "#injectables"]
-				6: name: "variable.parameter.data-test.file-magic"
-				7: name: "keyword.operator.wildcard.file-magic"
-				8: patterns: [include: "#injectables"]
+				2: patterns: [include: "#testFlags"]
+				3: name: "keyword.operator.logical.file-magic"
+				4: name: "variable.parameter.data-test.file-magic"
+				5: name: "keyword.operator.wildcard.file-magic"
+				6: patterns: [
+					{include: "#number"}
+					{include: "#escape"}
+				]
 		},{
-			match: "(?:\\t+|\\x20{2,})((?:[^\\s\\\\]|\\\\.|\\x20(?=\\S))+)\\s*$"
+			match: "(?<![^\\\\]\\\\)\\s+((?:[^\\s\\\\]|\\\\.| (?=\\S))+)\\s*$"
 			captures:
 				1:
 					name: "string.quoted.double.file-magic"
@@ -144,15 +192,18 @@ repository:
 						{include: "#escape"}
 					]
 		}]
+	
+	
+	# Modifier flags for type specifiers
+	testFlags:
+		patterns: [
+			{name: "punctuation.separator.flags.file-magic", match: "/"}
+			{name: "storage.modifier.flag.file-magic", match: "[BCHJLTWbchlstw]+"}
+			{include: "#number"}
+			{include: "#escape"}
+			{include: "#operator"}
+		]
 
 	operator:
 		name: "keyword.operator.logical.file-magic"
 		match: "[=<>&^~!]"
-
-	
-	injectables:
-		patterns: [
-			{include: "#operator"}
-			{include: "#escape"}
-			{include: "#number"}
-		]

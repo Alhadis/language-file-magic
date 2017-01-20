@@ -13,6 +13,7 @@ repository:
 			{include: "#comment"}
 			{include: "#escape"}
 			{include: "#offset"}
+			{include: "#functions"}
 			{include: "#operator"}
 			{include: "#test"}
 			{include: "#number"}
@@ -35,6 +36,28 @@ repository:
 			{match: "\\\\.",               name: "constant.character.escape.file-magic"}
 		]
 
+
+	# :!type statements
+	functions:
+		patterns: [{
+			name: "meta.function-call.file-magic"
+			match: "^(!:strength)\\s+([-+*/])\\s+(-?0x[A-Fa-f0-9]+|-?\\d+)"
+			captures:
+				1: name: "entity.name.function.file-magic"
+				2: name: "keyword.operator.arithmetic.file-magic"
+				3: patterns: [include: "#number"]
+		},{
+			name: "meta.function-call.file-magic"
+			match: "^(!:(?:apple|mime|ext))\\s+(\\S+)(?:\\s+((#).*))?"
+			captures:
+				1: name: "entity.name.function.file-magic"
+				2: name: "string.quoted.double.file-magic"
+				3: name: "comment.line.number-sign.file-magic"
+				4: name: "punctuation.definition.comment.file-magic"
+		},{
+			name: "entity.name.function.file-magic"
+			match: "^(!:[a-z]+)(?=\\s|$)"
+		}]
 		
 
 	# Numeric literals

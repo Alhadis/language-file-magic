@@ -54,11 +54,12 @@ module.exports = {
 	enchant(editor){
 		if(!editor) return;
 		const isMagical = this.pathPattern.test(editor.getPath());
-		if(isMagical && atom.grammars.nullGrammar === editor.getGrammar()){
+		const override = atom.textEditors.getGrammarOverride(editor);
+		if(isMagical && (!override || SCOPE_NAME === override)){
 			editor.setGrammar(this.grammar);
 			atom.textEditors.setGrammarOverride(editor, SCOPE_NAME);
 		}
-		else if(!isMagical && SCOPE_NAME === atom.textEditors.getGrammarOverride(editor))
+		else if(!isMagical && SCOPE_NAME === override)
 			atom.textEditors.clearGrammarOverride(editor);
 	},
 	

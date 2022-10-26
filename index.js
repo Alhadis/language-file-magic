@@ -2,7 +2,7 @@
 
 const {CompositeDisposable} = require("atom");
 const {resolve, sep} = require("path");
-const SCOPE_NAME = "text.file-magic";
+const SCOPE_NAME = "source.file-magic";
 
 
 module.exports = {

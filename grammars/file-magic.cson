@@ -1,5 +1,5 @@
 name: "File Magic"
-scopeName: "text.file-magic"
+scopeName: "source.file-magic"
 fileTypes: [
 	"apache2/magic"
 	"magic/Header"

@@ -8,6 +8,13 @@
 	"engines": {
 		"atom": "*"
 	},
+	"devDependencies": {
+		"@alhadis/eslint-config": "^2.4.1",
+		"eslint": "^8.22"
+	},
+	"eslintConfig": {
+		"extends": "@alhadis/eslint-config/atom"
+	},
 	"configSchema": {
 		"paths": {
 			"type": "array",

@@ -18,15 +18,15 @@ module.exports = {
 					path = resolve(path);
 					if(!/\*/.test(path)) path += sep + "*";
 					return path
-						.replace(/[\\\/]+/g, sep)
+						.replace(/[\\/]+/g, sep)
 						.replace(/\*+/g, "\u274B")
-						.replace(/[/\\^$*+?{}\[\]().|]/g, "\\$&")
+						.replace(/[/\\^$*+?{}[\]().|]/g, "\\$&")
 						.replace(/\u274B+/g, "[-.\\w]+") + "$";
 				}).join("|"), "i");
 				
 				const {editors} = atom.textEditors;
 				if(this.activated && editors)
-					editors.forEach(ed => enchant(ed));
+					editors.forEach(ed => this.enchant(ed));
 			})
 		);
 		this.waitToLoad().then(grammar => {
@@ -86,5 +86,5 @@ module.exports = {
 				);
 			}
 		});
-	}
+	},
 };

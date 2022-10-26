@@ -1,2 +1,8 @@
 # Include CSON files in GitHub's language breakdown graph
 *.cson linguist-detectable
+
+# Exclude unnecessary files from distribution
+/.gitattributes export-ignore
+/.gitignore     export-ignore
+/.editorconfig  export-ignore
+/preview.png    export-ignore

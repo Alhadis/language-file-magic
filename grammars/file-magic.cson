@@ -26,7 +26,7 @@ repository:
 		name: "comment.line.number-sign.file-magic"
 		begin: "^#"
 		end:   "$"
-		beginCaptures: "punctuation.definition.comment.file-magic"
+		beginCaptures: 0: "punctuation.definition.comment.file-magic"
 
 
 	escape:
